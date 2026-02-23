@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2d18e" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#f2d18e" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="none"/>
+  <g stroke="#f2d18e" stroke-opacity="0.16" fill="none">
+    <path d="M150 1120V650C150 460 300 300 500 300C700 300 850 460 850 650V1120" stroke-width="2.2"/>
+    <path d="M120 1120V665C120 435 298 250 500 250C702 250 880 435 880 665V1120" stroke-width="1.6"/>
+    <path d="M750 1120V620C750 430 900 280 1100 280C1300 280 1450 430 1450 620V1120" stroke-width="2.2"/>
+    <path d="M720 1120V637C720 407 898 230 1100 230C1302 230 1480 407 1480 637V1120" stroke-width="1.6"/>
+  </g>
+  <g fill="url(#fade)">
+    <path d="M150 1120V650C150 460 300 300 500 300C700 300 850 460 850 650V1120"/>
+    <path d="M750 1120V620C750 430 900 280 1100 280C1300 280 1450 430 1450 620V1120"/>
+  </g>
+</svg>

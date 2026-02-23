@@ -14,10 +14,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render couple names in title', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, WeedingInvitation');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Pronoy');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Prakriti');
   });
 });

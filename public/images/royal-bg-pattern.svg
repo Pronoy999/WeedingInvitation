@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+  <defs>
+    <pattern id="p" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M40 4L47 24L68 24L52 37L58 58L40 45L22 58L28 37L12 24L33 24Z" fill="#f2d18e" fill-opacity="0.08"/>
+      <circle cx="40" cy="40" r="26" fill="none" stroke="#f2d18e" stroke-opacity="0.09" stroke-width="1.2"/>
+      <circle cx="40" cy="40" r="38" fill="none" stroke="#f2d18e" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="320" height="320" fill="url(#p)"/>
+</svg>
