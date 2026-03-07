@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "dist/weeding-invitation/browser"
+  publish = "dist/WeedingInvitation/browser"
 
 [[redirects]]
   from = "/*"
