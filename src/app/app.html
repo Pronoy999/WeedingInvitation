@@ -1,10 +1,31 @@
 @if (showSplash) {
-  <section class="splash-screen" [class.fade-out]="splashFading" aria-label="Splash Screen">
-    <img [src]="couple.splashImage" alt="Wedding splash placeholder" />
+<section class="splash-screen" [class.opening]="splashOpening" [class.fade-out]="splashFading"
+    aria-label="Wedding invitation">
+    <img class="splash-photo" [src]="couple.splashImage"
+        alt="Pronoy and Prakriti walking together on the beach at sunset" />
     <div class="splash-overlay">
-      <h2>Witness the journey of Pronoy & Prakriti</h2>
+        <div class="splash-copy">
+            <p class="splash-kicker">A celebration of love</p>
+            <h2>{{ couple.groom }} <span>&</span> {{ couple.bride }}</h2>
+            <p class="splash-date">29 January 2027 <span aria-hidden="true">·</span> Kolkata</p>
+        </div>
+        <button class="envelope-button" type="button" (click)="openInvitation()" [disabled]="splashOpening"
+            aria-label="Open the wedding invitation">
+            <span class="envelope" aria-hidden="true">
+                <span class="envelope-letter">
+                    <span class="letter-monogram">P <span>&</span> P</span>
+                    <span class="letter-title">Wedding Invitation</span>
+                    <span class="letter-date">29 · 01 · 2027</span>
+                </span>
+                <span class="envelope-back"></span>
+                <span class="envelope-flap"></span>
+                <span class="envelope-front"></span>
+                <span class="envelope-seal">P<span>&</span>P</span>
+            </span>
+            <span class="envelope-label">{{ splashOpening ? 'Opening invitation...' : 'Open invitation' }}</span>
+        </button>
     </div>
-  </section>
+</section>
 }
 
 <div class="page-bg" aria-hidden="true"></div>
@@ -13,113 +34,121 @@
 <div class="royal-orb orb-two" [style.transform]="orbTwoTransform" aria-hidden="true"></div>
 
 <main class="invitation-page">
-  <header class="top-nav reveal in-view" #revealEl>
-    <a href="#home">Home</a>
-    <a href="#schedule">Timeline</a>
-    <a href="#gallery">Gallery</a>
-  </header>
+    <header class="top-nav reveal in-view" #revealEl>
+        <a href="#home">Home</a>
+        <a href="#schedule">Timeline</a>
+        <a href="#gallery">Gallery</a>
+    </header>
 
-  <section class="hero in-view" id="home">
-    <div class="hero-overlay" aria-hidden="true"></div>
+    <section class="hero in-view" id="home">
+        <div class="hero-overlay" aria-hidden="true"></div>
 
-    <div class="hero-content" [style.transform]="heroContentTransform">
-      <p class="welcome">শুভ বিবাহ</p>
-      <div style="display:flex;align-items: center; flex-wrap: wrap; gap: 30px;">
-        <h1><p>{{ couple.groom }}</p> <p class="groom-family" style="font-size: 14px;font-family: cursive">S/O Pulak Mukherjee & Mousumi Mukherjee.</p> </h1>
-          <h1><span>&</span> </h1>
-        <h1><p>{{ couple.bride }}</p> <p class="bride-family" style="font-size: 14px;font-family: cursive">D/O Sunil Kumar Panja and Kuhali Panja.</p></h1>
-      </div>
-      <p class="title">{{ couple.title }}</p>
-      <p class="tagline">{{ couple.weddingTagline }}</p>
-
-      <div class="hero-actions">
-        <a href="#schedule" class="cta">View Wedding Schedule</a>
-        <a href="#gallery" class="ghost-cta">Our Moments</a>
-      </div>
-    </div>
-
-    <figure class="hero-image-card" [style.transform]="heroImageTransform">
-      <img
-        [src]="couple.heroImage"
-        [alt]="couple.groom + ' and ' + couple.bride + ' hero photo placeholder'"
-      />
-    </figure>
-  </section>
-
-  <section class="save-date reveal" #revealEl>
-    <div class="save-date-frame">
-      <p class="kicker">Save The Date</p>
-      <h2>{{ mainWeddingDate }}</h2>
-      <p class="save-text">Main wedding ceremony at {{ mainWeddingVenue }}</p>
-    </div>
-  </section>
-
-  <section class="schedule reveal" #revealEl id="schedule">
-    <div class="section-header reveal" #revealEl>
-      <p class="kicker">Ceremonies & Celebrations</p>
-      <h2>Wedding Timeline</h2>
-    </div>
-
-    <div class="timeline">
-      <div class="timeline-line" aria-hidden="true"></div>
-
-      @for (event of events; track event.date + event.occasion; let index = $index) {
-        <article
-          class="timeline-row reveal"
-          #revealEl
-          [class.left]="index % 2 === 0"
-          [class.right]="index % 2 === 1"
-        >
-          <div class="timeline-dot" aria-hidden="true"></div>
-
-          <div
-            class="event-card"
-            #timelineCard
-            [style.--scroll-scale]="cardScales[index]"
-            [style.--scroll-y]="cardOffsets[index]"
-          >
-            <div class="event-media">
-              <img [src]="event.image" [alt]="event.occasion + ' placeholder image'" />
+        <div class="hero-content" [style.transform]="heroContentTransform">
+            <p class="welcome">শুভ বিবাহ</p>
+            <div style="display:flex;align-items: center; flex-wrap: wrap; gap: 30px;">
+                <h1>
+                    <p>{{ couple.groom }}</p>
+                    <p class="groom-family" style="font-size: 14px;font-family: cursive">S/O Pulak Mukherjee & Mousumi
+                        Mukherjee.</p>
+                </h1>
+                <h1><span>&</span> </h1>
+                <h1>
+                    <p>{{ couple.bride }}</p>
+                    <p class="bride-family" style="font-size: 14px;font-family: cursive">D/O Sunil Kumar Panja and
+                        Kuhali Panja.</p>
+                </h1>
             </div>
+            <p class="title">{{ couple.title }}</p>
+            <p class="tagline">{{ couple.weddingTagline }}</p>
 
-            <div class="event-content">
-              <p class="event-date">{{ event.date }}</p>
-              <p class="event-time">{{ event.time }}</p>
-              <h3>{{ event.occasion }}</h3>
-              <p class="event-note">{{ event.note }}</p>
-
-              <ul class="event-meta">
-                <li><strong>Venue:</strong> {{ event.venue }}</li>
-                <li><strong>Location:</strong> {{ event.location }}</li>
-              </ul>
-
-              <a [href]="event.mapUrl" target="_blank" rel="noopener" class="map-link">
-                Open Venue Map
-              </a>
+            <div class="hero-actions">
+                <a href="#schedule" class="cta">View Wedding Schedule</a>
+                <a href="#gallery" class="ghost-cta">Our Moments</a>
             </div>
-          </div>
-        </article>
-      }
-    </div>
-  </section>
+        </div>
 
-  <section class="gallery reveal" #revealEl id="gallery">
-    <div class="section-header reveal" #revealEl>
-      <p class="kicker">Memories</p>
-      <h2>Our Photo Gallery</h2>
-    </div>
-
-    <div class="gallery-grid">
-      @for (photo of gallery; track photo.image) {
-        <figure class="gallery-item reveal" #revealEl>
-          <img [src]="photo.image" [alt]="photo.alt" />
+        <figure class="hero-image-card" [style.transform]="heroImageTransform">
+            <img [src]="couple.heroImage" [alt]="couple.groom + ' and ' + couple.bride + ' hero photo placeholder'" />
         </figure>
-      }
-    </div>
-  </section>
+    </section>
 
-  <footer class="footer reveal" #revealEl>
-    <p>We look forward to celebrating with you.</p>
-    <p class="small">Invitation from {{ couple.groom }} & {{ couple.bride }} and their families.</p>
-  </footer>
+    <section class="save-date reveal" #revealEl>
+        <div class="save-date-content">
+            <div class="save-date-frame">
+                <p class="kicker">Save The Date</p>
+                <h2>{{ mainWeddingDate }}</h2>
+                <p class="save-text">Main wedding ceremony at {{ mainWeddingVenue }}</p>
+            </div>
+            <div class="countdown-frame" aria-label="Countdown to the wedding ceremony">
+                <p class="kicker">Counting Down To</p>
+                <div class="countdown" aria-label="Time remaining">
+                    <div class="countdown-unit"><span>{{ countdown.days }}</span><small>Days</small></div>
+                    <div class="countdown-unit"><span>{{ countdown.hours }}</span><small>Hours</small></div>
+                    <div class="countdown-unit"><span>{{ countdown.minutes }}</span><small>Minutes</small></div>
+                    <div class="countdown-unit"><span>{{ countdown.seconds }}</span><small>Seconds</small></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="schedule reveal" #revealEl id="schedule">
+        <div class="section-header reveal" #revealEl>
+            <p class="kicker">Ceremonies & Celebrations</p>
+            <h2>Wedding Timeline</h2>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-line" aria-hidden="true"></div>
+
+            @for (event of events; track event.date + event.occasion; let index = $index) {
+            <article class="timeline-row reveal" #revealEl [class.left]="index % 2 === 0"
+                [class.right]="index % 2 === 1">
+                <div class="timeline-dot" aria-hidden="true"></div>
+
+                <div class="event-card" #timelineCard [style.--scroll-scale]="cardScales[index]"
+                    [style.--scroll-y]="cardOffsets[index]">
+                    <div class="event-media">
+                        <img [src]="event.image" [alt]="event.occasion + ' placeholder image'" />
+                    </div>
+
+                    <div class="event-content">
+                        <p class="event-date">{{ event.date }}</p>
+                        <p class="event-time">{{ event.time }}</p>
+                        <h3>{{ event.occasion }}</h3>
+                        <p class="event-note">{{ event.note }}</p>
+
+                        <ul class="event-meta">
+                            <li><strong>Venue:</strong> {{ event.venue }}</li>
+                            <li><strong>Location:</strong> {{ event.location }}</li>
+                        </ul>
+
+                        <a [href]="event.mapUrl" target="_blank" rel="noopener" class="map-link">
+                            Open Venue Map
+                        </a>
+                    </div>
+                </div>
+            </article>
+            }
+        </div>
+    </section>
+
+    <section class="gallery reveal" #revealEl id="gallery">
+        <div class="section-header reveal" #revealEl>
+            <p class="kicker">Memories</p>
+            <h2>Our Photo Gallery</h2>
+        </div>
+
+        <div class="gallery-grid">
+            @for (photo of gallery; track photo.image) {
+            <figure class="gallery-item reveal" #revealEl>
+                <img [src]="photo.image" [alt]="photo.alt" />
+            </figure>
+            }
+        </div>
+    </section>
+
+    <footer class="footer reveal" #revealEl>
+        <p>We look forward to celebrating with you.</p>
+        <p class="small">Invitation from {{ couple.groom }} & {{ couple.bride }} and their families.</p>
+    </footer>
 </main>
