@@ -1,8 +1,8 @@
-@if (showSplash) {
+@if (showSplash()) {
 <section class="splash-screen" [class.opening]="splashOpening" [class.fade-out]="splashFading"
     aria-label="Wedding invitation">
-    <img class="splash-photo" [src]="couple.splashImage"
-        alt="Pronoy and Prakriti walking together on the beach at sunset" />
+    <img class="splash-photo" [src]="couple.splashImage" alt="Golden Riverside Wedding Terrace" loading="eager"
+        fetchpriority="high" />
     <div class="splash-overlay">
         <div class="splash-copy">
             <p class="splash-kicker">A celebration of love</p>
@@ -24,6 +24,9 @@
             </span>
             <span class="envelope-label">{{ splashOpening ? 'Opening invitation...' : 'Open invitation' }}</span>
         </button>
+        <span style="font-family: cursives;">
+            We said “I do” on 3rd May 2026 in our court marriage; now, let's celebrate our forever with you! ❤️
+        </span>
     </div>
 </section>
 }
@@ -33,7 +36,7 @@
 <div class="royal-orb orb-one" [style.transform]="orbOneTransform" aria-hidden="true"></div>
 <div class="royal-orb orb-two" [style.transform]="orbTwoTransform" aria-hidden="true"></div>
 
-<main class="invitation-page">
+<main class="invitation-page" [class.splash-active]="showSplash()" [attr.aria-hidden]="showSplash()">
     <header class="top-nav reveal in-view" #revealEl>
         <a href="#home">Home</a>
         <a href="#schedule">Timeline</a>
@@ -48,17 +51,18 @@
             <div style="display:flex;align-items: center; flex-wrap: wrap; gap: 30px;">
                 <h1>
                     <p>{{ couple.groom }}</p>
-                    <p class="groom-family" style="font-size: 14px;font-family: cursive">S/O Pulak Mukherjee & Mousumi
-                        Mukherjee.</p>
+                    <p class="groom-family" style="font-size: 14px;font-family: cursive">
+                        S/O Pulak Mukherjee & Mousumi Mukherjee.
+                    </p>
                 </h1>
                 <h1><span>&</span> </h1>
                 <h1>
                     <p>{{ couple.bride }}</p>
-                    <p class="bride-family" style="font-size: 14px;font-family: cursive">D/O Sunil Kumar Panja and
-                        Kuhali Panja.</p>
+                    <p class="bride-family" style="font-size: 14px;font-family: cursive">
+                        D/O Sunil Kumar Panja and Kuhali Panja.
+                    </p>
                 </h1>
             </div>
-            <p class="title">{{ couple.title }}</p>
             <p class="tagline">{{ couple.weddingTagline }}</p>
 
             <div class="hero-actions">
@@ -82,10 +86,12 @@
             <div class="countdown-frame" aria-label="Countdown to the wedding ceremony">
                 <p class="kicker">Counting Down To</p>
                 <div class="countdown" aria-label="Time remaining">
-                    <div class="countdown-unit"><span>{{ countdown.days }}</span><small>Days</small></div>
-                    <div class="countdown-unit"><span>{{ countdown.hours }}</span><small>Hours</small></div>
-                    <div class="countdown-unit"><span>{{ countdown.minutes }}</span><small>Minutes</small></div>
-                    <div class="countdown-unit"><span>{{ countdown.seconds }}</span><small>Seconds</small></div>
+                    @for (unit of countdownUnits(); track unit.key + unit.value) {
+                    <div class="countdown-unit">
+                        <span class="countdown-value">{{ unit.value }}</span>
+                        <small>{{ unit.label }}</small>
+                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -113,18 +119,35 @@
 
                     <div class="event-content">
                         <p class="event-date">{{ event.date }}</p>
-                        <p class="event-time">{{ event.time }}</p>
                         <h3>{{ event.occasion }}</h3>
                         <p class="event-note">{{ event.note }}</p>
 
+                        @if (event.schedules; as schedules) {
+                        <div class="event-schedules">
+                            @for (schedule of schedules; track schedule.side) {
+                            <section class="event-side-schedule">
+                                <h4>{{ schedule.side }}'s family</h4>
+                                <p class="event-time">{{ schedule.time }}</p>
+                                <ul class="event-meta">
+                                    <li><strong>Venue:</strong> {{ schedule.venue }}</li>
+                                    <li><strong>Location:</strong> {{ schedule.location }}</li>
+                                </ul>
+                                <a [href]="schedule.mapUrl" target="_blank" rel="noopener" class="map-link">
+                                    Open Map
+                                </a>
+                            </section>
+                            }
+                        </div>
+                        } @else {
+                        <p class="event-time">{{ event.time }}</p>
                         <ul class="event-meta">
                             <li><strong>Venue:</strong> {{ event.venue }}</li>
                             <li><strong>Location:</strong> {{ event.location }}</li>
                         </ul>
-
                         <a [href]="event.mapUrl" target="_blank" rel="noopener" class="map-link">
                             Open Venue Map
                         </a>
+                        }
                     </div>
                 </div>
             </article>
@@ -139,16 +162,39 @@
         </div>
 
         <div class="gallery-grid">
-            @for (photo of gallery; track photo.image) {
+            @for (photo of gallery; track photo.image; let index = $index) {
             <figure class="gallery-item reveal" #revealEl>
-                <img [src]="photo.image" [alt]="photo.alt" />
+                <button class="gallery-trigger" type="button" (click)="openGalleryPhoto(index)"
+                    [attr.aria-label]="'View photo: ' + photo.caption">
+                    <img [src]="photo.image" [alt]="photo.alt" />
+                    <span class="gallery-caption">{{ photo.caption }}</span>
+                </button>
             </figure>
             }
         </div>
+
+        <dialog #galleryDialog class="gallery-lightbox" aria-labelledby="lightbox-caption"
+            (click)="closeGalleryOnBackdrop($event)" (keydown)="onGalleryKeydown($event)"
+            (close)="onGalleryDialogClosed()">
+            @if (activeGalleryPhoto; as photo) {
+            <div class="lightbox-content">
+                <button class="lightbox-control lightbox-close" type="button" (click)="closeGalleryPhoto()"
+                    aria-label="Close photo">&times;</button>
+                <button class="lightbox-control lightbox-previous" type="button"
+                    (click)="showPreviousGalleryPhoto()" aria-label="Previous photo">&#8249;</button>
+                <figure class="lightbox-photo">
+                    <img [src]="photo.image" [alt]="photo.alt" />
+                    <figcaption id="lightbox-caption">{{ photo.caption }}</figcaption>
+                </figure>
+                <button class="lightbox-control lightbox-next" type="button" (click)="showNextGalleryPhoto()"
+                    aria-label="Next photo">&#8250;</button>
+            </div>
+            }
+        </dialog>
     </section>
 
     <footer class="footer reveal" #revealEl>
         <p>We look forward to celebrating with you.</p>
-        <p class="small">Invitation from {{ couple.groom }} & {{ couple.bride }} and their families.</p>
+        <p class="small">Invitation from {{ couple.groom }}, {{ couple.bride }} and their families.</p>
     </footer>
 </main>

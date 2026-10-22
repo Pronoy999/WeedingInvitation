@@ -5,19 +5,42 @@ import {
     HostListener,
     OnDestroy,
     QueryList,
+    signal,
+    ViewChild,
     ViewChildren,
 } from '@angular/core';
 
 interface WeddingEvent {
     date: string;
-    time: string;
+    time?: string;
     countdownTarget?: string;
     occasion: string;
+    venue?: string;
+    location?: string;
+    mapUrl?: string;
+    schedules?: EventSchedule[];
+    image: string;
+    note: string;
+}
+
+interface EventSchedule {
+    side: 'Groom' | 'Bride';
+    time: string;
     venue: string;
     location: string;
     mapUrl: string;
+}
+
+interface CountdownUnit {
+    key: 'days' | 'hours' | 'minutes' | 'seconds';
+    label: string;
+    value: number;
+}
+
+interface GalleryPhoto {
     image: string;
-    note: string;
+    alt: string;
+    caption: string;
 }
 
 @Component({
@@ -26,6 +49,7 @@ interface WeddingEvent {
     styleUrl: './app.css',
 })
 export class App implements AfterViewInit, OnDestroy {
+    @ViewChild('galleryDialog') galleryDialog?: ElementRef<HTMLDialogElement>;
     @ViewChildren('revealEl') revealElements!: QueryList<ElementRef<HTMLElement>>;
     @ViewChildren('timelineCard') timelineCards!: QueryList<ElementRef<HTMLElement>>;
 
@@ -39,10 +63,15 @@ export class App implements AfterViewInit, OnDestroy {
     scrollY = 0;
     cardScales: number[] = [];
     cardOffsets: string[] = [];
-    showSplash = true;
+    showSplash = signal(true);
     splashOpening = false;
     splashFading = false;
-    countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    countdownUnits = signal<CountdownUnit[]>([
+        { key: 'days', label: 'Days', value: 0 },
+        { key: 'hours', label: 'Hours', value: 0 },
+        { key: 'minutes', label: 'Minutes', value: 0 },
+        { key: 'seconds', label: 'Seconds', value: 0 },
+    ]);
     private audio = new Audio();
 
     constructor() {
@@ -52,7 +81,6 @@ export class App implements AfterViewInit, OnDestroy {
 
     // Update couple info and media paths here.
     readonly couple = {
-        title: 'Bengali Wedding Invitation',
         groom: 'Pronoy',
         bride: 'Prakriti',
         weddingTagline: 'With blessings and joy, we invite you to celebrate our union.',
@@ -63,32 +91,46 @@ export class App implements AfterViewInit, OnDestroy {
     // Update schedule values, notes, map links, and event images here.
     readonly events: WeddingEvent[] = [
         {
-            date: '3 May 2026',
-            time: '5:30 PM',
-            occasion: 'Aasirvaad & Court Marriage',
-            venue: 'Larica Tolly Community Hall',
-            location: 'Kolkata, West Bengal',
-            mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
-            image: 'images/event-engagement-placeholder.png',
-            note: 'Traditional blessings and ring ceremony.',
-        },
-        {
             date: '28 January 2027',
-            time: '12:30 PM',
             occasion: 'Aiburobhat',
-            venue: 'Larica Tolly Community Hall',
-            location: 'Kolkata, West Bengal',
-            mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
+            schedules: [
+                {
+                    side: 'Groom',
+                    time: '12:30 PM',
+                    venue: '266, Subhas Nagar',
+                    location: 'Kolkata, West Bengal, 700061',
+                    mapUrl: 'https://maps.app.goo.gl/H89PCnDdxyZdbDaRA',
+                },
+                {
+                    side: 'Bride',
+                    time: '12:30 PM',
+                    venue: 'Larica Tolly Community Hall',
+                    location: 'Kolkata, West Bengal, 700104',
+                    mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
+                },
+            ],
             image: 'images/event-aiburobhat-placeholder.png',
             note: 'A joyful pre-wedding feast with close family.',
         },
         {
             date: '29 January 2027',
-            time: '09:30 AM',
             occasion: 'Haldi',
-            venue: 'Larica Tolly Community Hall',
-            location: 'Kolkata, West Bengal',
-            mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
+            schedules: [
+                {
+                    side: 'Groom',
+                    time: '8:30 AM',
+                    venue: '266, Subhas Nagar',
+                    location: 'Kolkata, West Bengal, 700061',
+                    mapUrl: 'https://maps.app.goo.gl/H89PCnDdxyZdbDaRA',
+                },
+                {
+                    side: 'Bride',
+                    time: '9:30 AM',
+                    venue: 'Larica Tolly Community Hall',
+                    location: 'Kolkata, West Bengal, 700104',
+                    mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
+                },
+            ],
             image: 'images/event-haldi-placeholder.png',
             note: 'Haldi ceremony filled with colors and blessings.',
         },
@@ -98,7 +140,7 @@ export class App implements AfterViewInit, OnDestroy {
             countdownTarget: '2027-01-29T18:30:00+05:30',
             occasion: 'Wedding Ceremony',
             venue: 'Princeton Club',
-            location: 'Kolkata, West Bengal',
+            location: 'Kolkata, West Bengal, 700033',
             mapUrl: 'https://maps.google.com/?q=Princeton+Club+Kolkata',
             image: 'images/event-wedding-placeholder.png',
             note: 'Sacred wedding rituals and celebration.',
@@ -108,7 +150,7 @@ export class App implements AfterViewInit, OnDestroy {
             time: '8:30 AM',
             occasion: 'Bidai',
             venue: 'Larica Tolly Community Hall',
-            location: 'Kolkata, West Bengal',
+            location: 'Kolkata, West Bengal, 700104',
             mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
             image: 'images/event-bidai-placeholder.png',
             note: 'Emotional farewell with family blessings.',
@@ -118,7 +160,7 @@ export class App implements AfterViewInit, OnDestroy {
             time: '7:00 PM',
             occasion: 'Reception',
             venue: 'Basushree Wedding Hall',
-            location: 'Kolkata, West Bengal',
+            location: 'Kolkata, West Bengal, 700034',
             mapUrl: 'https://maps.google.com/?q=Basushree+Wedding+Hall',
             image: 'images/event-reception-placeholder.png',
             note: 'An evening of dinner, music and blessings.',
@@ -126,40 +168,116 @@ export class App implements AfterViewInit, OnDestroy {
     ];
 
     // Add more photos or replace these placeholders when you share real pictures.
-    readonly gallery = [
+    selectedGalleryIndex = signal<number | null>(null);
+
+    readonly gallery: GalleryPhoto[] = [
         {
             image: 'images/gallery-1-placeholder.jpg',
             alt: 'Pronoy and Prakriti memory placeholder one',
+            caption: 'Best surprise ever!',
         },
         {
             image: 'images/gallery-2-placeholder.jpg',
             alt: 'Pronoy and Prakriti memory placeholder two',
+            caption: 'A little more us',
         },
         {
             image: 'images/gallery-3-placeholder.jpg',
             alt: 'Pronoy and Prakriti memory placeholder three',
+            caption: 'Together, always',
         },
         {
             image: 'images/gallery-4-placeholder.jpg',
             alt: 'Pronoy and Prakriti memory placeholder four',
+            caption: 'Calm and Cozy',
         },
         {
             image: 'images/gallery-5-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder five',
+            alt: 'Pronoy and Prakriti memory placeholder four',
+            caption: 'First international trip together!',
         },
         {
             image: 'images/gallery-6-placeholder.jpg',
+            alt: 'Pronoy and Prakriti memory placeholder four',
+            caption: 'Home looks like him',
+        },
+        {
+            image: 'images/gallery-7-placeholder.jpg',
             alt: 'Pronoy and Prakriti memory placeholder six',
+            caption: 'A moment close to heart',
         },
         {
-            image: 'images/gallery-7-placeholder.JPG',
+            image: 'images/gallery-8-placeholder.jpg',
+            alt: 'Pronoy and Prakriti memory placeholder four',
+            caption: 'Unstoppable together',
+        },
+        {
+            image: 'images/gallery-9-placeholder.jpg',
+            alt: 'Pronoy and Prakriti memory placeholder four',
+            caption: 'Worth the wait',
+        },
+        {
+            image: 'images/gallery-10-placeholder.JPG',
+            alt: 'Pronoy and Prakriti memory placeholder five',
+            caption: 'Our favorite chapter',
+        },
+        {
+            image: 'images/gallery-11-placeholder.JPG',
             alt: 'Pronoy and Prakriti memory placeholder seven',
+            caption: 'The beginning of forever',
         },
         {
-            image: 'images/gallery-8-placeholder.JPG',
+            image: 'images/gallery-12-placeholder.JPG',
             alt: 'Pronoy and Prakriti memory placeholder eight',
+            caption: 'Here’s to everything ahead',
         }
     ];
+
+    get activeGalleryPhoto(): GalleryPhoto | null {
+        const index = this.selectedGalleryIndex();
+        return index === null ? null : this.gallery[index] ?? null;
+    }
+
+    openGalleryPhoto(index: number): void {
+        this.selectedGalleryIndex.set(index);
+        this.galleryDialog?.nativeElement.showModal();
+    }
+
+    closeGalleryPhoto(): void {
+        this.galleryDialog?.nativeElement.close();
+    }
+
+    closeGalleryOnBackdrop(event: MouseEvent): void {
+        if (event.target === event.currentTarget) {
+            this.closeGalleryPhoto();
+        }
+    }
+
+    onGalleryDialogClosed(): void {
+        this.selectedGalleryIndex.set(null);
+    }
+
+    onGalleryKeydown(event: KeyboardEvent): void {
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            this.showPreviousGalleryPhoto();
+        } else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            this.showNextGalleryPhoto();
+        }
+    }
+
+    showPreviousGalleryPhoto(): void {
+        this.selectedGalleryIndex.update((index) =>
+            (index === null ? 0 : (index - 1 + this.gallery.length) % this.gallery.length),
+        );
+    }
+
+    showNextGalleryPhoto(): void {
+        this.selectedGalleryIndex.update((index) =>
+            (index === null ? 0 : (index + 1) % this.gallery.length),
+        );
+    }
 
     get heroContentTransform(): string {
         const offset = Math.min(this.scrollY * 0.14, 75);
@@ -258,7 +376,7 @@ export class App implements AfterViewInit, OnDestroy {
     }
 
     openInvitation(): void {
-        if (!this.showSplash || this.splashOpening) {
+        if (!this.showSplash() || this.splashOpening) {
             return;
         }
 
@@ -267,7 +385,7 @@ export class App implements AfterViewInit, OnDestroy {
         this.splashFading = true;
         const openingMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 80 : 1450;
         this.splashOpenTimeoutId = setTimeout(() => {
-            this.showSplash = false;
+            this.showSplash.set(false);
             this.splashOpening = false;
             this.splashFading = false;
         }, openingMs);
@@ -280,12 +398,16 @@ export class App implements AfterViewInit, OnDestroy {
         }
 
         const remainingSeconds = Math.max(0, Math.floor((new Date(target).getTime() - Date.now()) / 1000));
-        this.countdown = {
+        const countdown = {
             days: Math.floor(remainingSeconds / 86400),
             hours: Math.floor((remainingSeconds % 86400) / 3600),
             minutes: Math.floor((remainingSeconds % 3600) / 60),
             seconds: remainingSeconds % 60,
         };
+        this.countdownUnits.update((units) => units.map((unit) => ({
+            ...unit,
+            value: countdown[unit.key],
+        })));
     }
 
     private updateTimelineCardMotion(): void {
