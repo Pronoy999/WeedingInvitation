@@ -1,14 +1,4 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    HostListener,
-    OnDestroy,
-    QueryList,
-    signal,
-    ViewChild,
-    ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 
 interface WeddingEvent {
     date: string;
@@ -48,6 +38,7 @@ interface GalleryPhoto {
     templateUrl: './app.html',
     styleUrl: './app.css',
 })
+
 export class App implements AfterViewInit, OnDestroy {
     @ViewChild('galleryDialog') galleryDialog?: ElementRef<HTMLDialogElement>;
     @ViewChildren('revealEl') revealElements!: QueryList<ElementRef<HTMLElement>>;
@@ -193,42 +184,42 @@ export class App implements AfterViewInit, OnDestroy {
         },
         {
             image: 'images/gallery-5-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            alt: 'Pronoy and Prakriti memory placeholder five',
             caption: 'First international trip together!',
         },
         {
             image: 'images/gallery-6-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            alt: 'Pronoy and Prakriti memory placeholder six',
             caption: 'Home looks like him',
         },
         {
-            image: 'images/gallery-7-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder six',
+            image: 'images/gallery-7-placeholder.JPG',
+            alt: 'Pronoy and Prakriti memory placeholder seven',
             caption: 'A moment close to heart',
         },
         {
-            image: 'images/gallery-8-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            image: 'images/gallery-8-placeholder.JPG',
+            alt: 'Pronoy and Prakriti memory placeholder eight',
             caption: 'Unstoppable together',
         },
         {
-            image: 'images/gallery-9-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            image: 'images/gallery-9-placeholder.jpeg',
+            alt: 'Pronoy and Prakriti memory placeholder nine',
             caption: 'Worth the wait',
         },
         {
-            image: 'images/gallery-10-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder five',
+            image: 'images/gallery-10-placeholder.jpeg',
+            alt: 'Pronoy and Prakriti memory placeholder ten',
             caption: 'Our favorite chapter',
         },
         {
             image: 'images/gallery-11-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder seven',
+            alt: 'Pronoy and Prakriti memory placeholder eleven',
             caption: 'The beginning of forever',
         },
         {
             image: 'images/gallery-12-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder eight',
+            alt: 'Pronoy and Prakriti memory placeholder twelve',
             caption: 'Here’s to everything ahead',
         }
     ];
