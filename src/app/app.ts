@@ -1,14 +1,5 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    HostListener,
-    OnDestroy,
-    QueryList,
-    signal,
-    ViewChild,
-    ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 interface WeddingEvent {
     date: string;
@@ -45,9 +36,11 @@ interface GalleryPhoto {
 
 @Component({
     selector: 'app-root',
+    imports: [FormsModule],
     templateUrl: './app.html',
     styleUrl: './app.css',
 })
+
 export class App implements AfterViewInit, OnDestroy {
     @ViewChild('galleryDialog') galleryDialog?: ElementRef<HTMLDialogElement>;
     @ViewChildren('revealEl') revealElements!: QueryList<ElementRef<HTMLElement>>;
@@ -66,6 +59,16 @@ export class App implements AfterViewInit, OnDestroy {
     showSplash = signal(true);
     splashOpening = false;
     splashFading = false;
+    rsvpEndpoint = 'https://script.google.com/macros/s/AKfycbyuDqIEmH21fK0UcJxwNhvgDhrfEal0JINvj_KU9ZASNadyEvOJia6zH48B2ONGzJdI/exec';
+    rsvpSubmitting = false;
+    rsvpMessage = '';
+    rsvpMessageType: 'success' | 'error' | '' = '';
+    rsvpForm = {
+        response: '',
+        name: '',
+        phone: '',
+        notes: '',
+    };
     countdownUnits = signal<CountdownUnit[]>([
         { key: 'days', label: 'Days', value: 0 },
         { key: 'hours', label: 'Hours', value: 0 },
@@ -97,7 +100,7 @@ export class App implements AfterViewInit, OnDestroy {
                 {
                     side: 'Groom',
                     time: '12:30 PM',
-                    venue: '266, Subhas Nagar',
+                    venue: "Mukherjee's Residency, 266, Talpukur Road",
                     location: 'Kolkata, West Bengal, 700061',
                     mapUrl: 'https://maps.app.goo.gl/H89PCnDdxyZdbDaRA',
                 },
@@ -109,7 +112,7 @@ export class App implements AfterViewInit, OnDestroy {
                     mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
                 },
             ],
-            image: 'images/event-aiburobhat-placeholder.png',
+            image: 'images/event-aiburobhat.png',
             note: 'A joyful pre-wedding feast with close family.',
         },
         {
@@ -119,7 +122,7 @@ export class App implements AfterViewInit, OnDestroy {
                 {
                     side: 'Groom',
                     time: '8:30 AM',
-                    venue: '266, Subhas Nagar',
+                    venue: "Mukherjee's Residency, 266, Talpukur Road",
                     location: 'Kolkata, West Bengal, 700061',
                     mapUrl: 'https://maps.app.goo.gl/H89PCnDdxyZdbDaRA',
                 },
@@ -131,7 +134,7 @@ export class App implements AfterViewInit, OnDestroy {
                     mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
                 },
             ],
-            image: 'images/event-haldi-placeholder.png',
+            image: 'images/event-haldi.webp',
             note: 'Haldi ceremony filled with colors and blessings.',
         },
         {
@@ -142,7 +145,7 @@ export class App implements AfterViewInit, OnDestroy {
             venue: 'Princeton Club',
             location: 'Kolkata, West Bengal, 700033',
             mapUrl: 'https://maps.google.com/?q=Princeton+Club+Kolkata',
-            image: 'images/event-wedding-placeholder.png',
+            image: 'images/event-wedding.webp',
             note: 'Sacred wedding rituals and celebration.',
         },
         {
@@ -152,7 +155,7 @@ export class App implements AfterViewInit, OnDestroy {
             venue: 'Larica Tolly Community Hall',
             location: 'Kolkata, West Bengal, 700104',
             mapUrl: 'https://maps.google.com/?q=Larica+Tolly+Community+Hall',
-            image: 'images/event-bidai-placeholder.png',
+            image: 'images/event-bidai.png',
             note: 'Emotional farewell with family blessings.',
         },
         {
@@ -162,7 +165,7 @@ export class App implements AfterViewInit, OnDestroy {
             venue: 'Basushree Wedding Hall',
             location: 'Kolkata, West Bengal, 700034',
             mapUrl: 'https://maps.google.com/?q=Basushree+Wedding+Hall',
-            image: 'images/event-reception-placeholder.png',
+            image: 'images/event-reception.png',
             note: 'An evening of dinner, music and blessings.',
         },
     ];
@@ -193,42 +196,42 @@ export class App implements AfterViewInit, OnDestroy {
         },
         {
             image: 'images/gallery-5-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            alt: 'Pronoy and Prakriti memory placeholder five',
             caption: 'First international trip together!',
         },
         {
             image: 'images/gallery-6-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            alt: 'Pronoy and Prakriti memory placeholder six',
             caption: 'Home looks like him',
         },
         {
-            image: 'images/gallery-7-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder six',
+            image: 'images/gallery-7-placeholder.JPG',
+            alt: 'Pronoy and Prakriti memory placeholder seven',
             caption: 'A moment close to heart',
         },
         {
-            image: 'images/gallery-8-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            image: 'images/gallery-8-placeholder.JPG',
+            alt: 'Pronoy and Prakriti memory placeholder eight',
             caption: 'Unstoppable together',
         },
         {
-            image: 'images/gallery-9-placeholder.jpg',
-            alt: 'Pronoy and Prakriti memory placeholder four',
+            image: 'images/gallery-9-placeholder.jpeg',
+            alt: 'Pronoy and Prakriti memory placeholder nine',
             caption: 'Worth the wait',
         },
         {
-            image: 'images/gallery-10-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder five',
+            image: 'images/gallery-10-placeholder.jpeg',
+            alt: 'Pronoy and Prakriti memory placeholder ten',
             caption: 'Our favorite chapter',
         },
         {
             image: 'images/gallery-11-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder seven',
+            alt: 'Pronoy and Prakriti memory placeholder eleven',
             caption: 'The beginning of forever',
         },
         {
             image: 'images/gallery-12-placeholder.JPG',
-            alt: 'Pronoy and Prakriti memory placeholder eight',
+            alt: 'Pronoy and Prakriti memory placeholder twelve',
             caption: 'Here’s to everything ahead',
         }
     ];
@@ -310,6 +313,76 @@ export class App implements AfterViewInit, OnDestroy {
         return weddingEvent?.venue ?? 'Princeton Club';
     }
 
+    async submitRsvp(): Promise<void> {
+        this.rsvpMessage = '';
+        this.rsvpMessageType = '';
+        if (!this.rsvpEndpoint.startsWith('https://script.google.com/macros/s/')) {
+            this.rsvpMessage = 'RSVP setup is incomplete. Please configure the Google Apps Script Web App URL.';
+            this.rsvpMessageType = 'error';
+            return;
+        }
+
+        this.rsvpSubmitting = true;
+        try {
+            await fetch(this.rsvpEndpoint, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+                body: JSON.stringify(this.rsvpForm),
+            });
+            this.rsvpMessage = 'Thank you! Your RSVP has been submitted.';
+            this.rsvpMessageType = 'success';
+            this.rsvpForm = { response: '', name: '', phone: '', notes: '' };
+        } catch (error) {
+            console.error('RSVP submission failed.', error);
+            this.rsvpMessage = 'We could not save your RSVP. Please try again or contact us.';
+            this.rsvpMessageType = 'error';
+        } finally {
+            this.rsvpSubmitting = false;
+        }
+    }
+
+    saveWeddingInvite(): void {
+        const wedding = this.events.find((event) => event.occasion === 'Wedding Ceremony');
+        if (!wedding?.countdownTarget || !wedding.venue || !wedding.location || !wedding.mapUrl) {
+            console.error('Cannot create the wedding calendar invite because event details are incomplete.');
+            return;
+        }
+
+        const start = new Date(wedding.countdownTarget);
+        const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
+        const formatCalendarDate = (date: Date): string => {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hourCycle: 'h23',
+            }).formatToParts(date);
+            const part = (type: Intl.DateTimeFormatPartTypes): string =>
+                parts.find((item) => item.type === type)?.value ?? '';
+            return `${part('year')}${part('month')}${part('day')}T${part('hour')}${part('minute')}${part('second')}`;
+        };
+        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
+        calendarUrl.searchParams.set('action', 'TEMPLATE');
+        calendarUrl.searchParams.set('text', "Pronoy & Prakriti's Wedding");
+        calendarUrl.searchParams.set('dates', `${formatCalendarDate(start)}/${formatCalendarDate(end)}`);
+        calendarUrl.searchParams.set('details', `${wedding.note}\n${wedding.mapUrl}`);
+        calendarUrl.searchParams.set('location', `${wedding.venue}, ${wedding.location}`);
+        calendarUrl.searchParams.set('ctz', 'Asia/Kolkata');
+
+        const link = document.createElement('a');
+        link.href = calendarUrl.toString();
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+
     @HostListener('window:scroll')
     onWindowScroll(): void {
         this.scrollY = window.scrollY || 0;
@@ -351,6 +424,7 @@ export class App implements AfterViewInit, OnDestroy {
         }, 1400);
 
         this.updateTimelineCardMotion();
+        window.scrollTo(0, 0);
     }
 
     ngOnDestroy(): void {
@@ -380,6 +454,8 @@ export class App implements AfterViewInit, OnDestroy {
             return;
         }
 
+        window.scrollTo(0, 0);
+        this.scrollY = 0;
         void this.audio.play().catch(() => undefined);
         this.splashOpening = true;
         this.splashFading = true;
