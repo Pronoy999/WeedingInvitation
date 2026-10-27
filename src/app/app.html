@@ -1,6 +1,5 @@
 @if (showSplash()) {
-<section class="splash-screen" [class.opening]="splashOpening" [class.fade-out]="splashFading"
-    aria-label="Wedding invitation">
+<section class="splash-screen" [class.opening]="splashOpening" [class.fade-out]="splashFading" aria-label="Wedding invitation">
     <img class="splash-photo" [src]="couple.splashImage" alt="Golden Riverside Wedding Terrace" loading="eager"
         fetchpriority="high" />
     <div class="splash-overlay">
@@ -21,8 +20,8 @@
                 <span class="envelope-flap"></span>
                 <span class="envelope-front"></span>
                 <span class="envelope-seal">P<span>&</span>P</span>
+                <span class="envelope-label">{{ splashOpening ? 'Opening invitation...' : 'Open invitation' }}</span>
             </span>
-            <span class="envelope-label">{{ splashOpening ? 'Opening invitation...' : 'Open invitation' }}</span>
         </button>
         <span style="font-family: cursives;">
             We said “I do” on 3rd May 2026 in our court marriage; now, let's celebrate our forever with you! ❤️
@@ -38,15 +37,28 @@
 
 <main class="invitation-page" [class.splash-active]="showSplash()" [attr.aria-hidden]="showSplash()">
     <header class="top-nav reveal in-view" #revealEl>
+        <a href="#home" class="nav-logo" aria-label="Home"><img src="images/logo.png" alt="P &amp; P" /></a>
         <a href="#home">Home</a>
         <a href="#schedule">Timeline</a>
         <a href="#gallery">Gallery</a>
+        <a href="#rsvp">RSVP</a>
     </header>
 
-    <section class="hero in-view" id="home">
+    <section class="save-date reveal in-view" #revealEl id="home">
+        <div class="save-date-class">
+            <div class="save-date-frame">
+                <h2>{{ mainWeddingDate }}</h2>
+                <p class="save-text">Main wedding ceremony at {{ mainWeddingVenue }}</p>
+                <button type="button" class="cta calendar-btn" id="saveDateBtn"
+                    (click)="saveWeddingInvite()">Save The Date</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="hero in-view">
         <div class="hero-overlay" aria-hidden="true"></div>
 
-        <div class="hero-content" [style.transform]="heroContentTransform">
+        <div class="hero-content">
             <p class="welcome">শুভ বিবাহ</p>
             <div style="display:flex;align-items: center; flex-wrap: wrap; gap: 30px;">
                 <h1>
@@ -64,36 +76,15 @@
                 </h1>
             </div>
             <p class="tagline">{{ couple.weddingTagline }}</p>
-
-            <div class="hero-actions">
-                <a href="#schedule" class="cta">View Wedding Schedule</a>
-                <a href="#gallery" class="ghost-cta">Our Moments</a>
-            </div>
         </div>
 
-        <figure class="hero-image-card" [style.transform]="heroImageTransform">
+        <figure class="hero-image-card">
             <img [src]="couple.heroImage" [alt]="couple.groom + ' and ' + couple.bride + ' hero photo placeholder'" />
         </figure>
-    </section>
 
-    <section class="save-date reveal" #revealEl>
-        <div class="save-date-content">
-            <div class="save-date-frame">
-                <p class="kicker">Save The Date</p>
-                <h2>{{ mainWeddingDate }}</h2>
-                <p class="save-text">Main wedding ceremony at {{ mainWeddingVenue }}</p>
-            </div>
-            <div class="countdown-frame" aria-label="Countdown to the wedding ceremony">
-                <p class="kicker">Counting Down To</p>
-                <div class="countdown" aria-label="Time remaining">
-                    @for (unit of countdownUnits(); track unit.key + unit.value) {
-                    <div class="countdown-unit">
-                        <span class="countdown-value">{{ unit.value }}</span>
-                        <small>{{ unit.label }}</small>
-                    </div>
-                    }
-                </div>
-            </div>
+        <div class="hero-actions">
+            <a href="#schedule" class="cta">View Wedding Schedule</a>
+            <a href="#gallery" class="ghost-cta">Our Moments</a>
         </div>
     </section>
 
@@ -191,6 +182,67 @@
             </div>
             }
         </dialog>
+    </section>
+
+    <section class="save-date reveal" #revealEl>
+        <div class="countdown-frame" aria-label="Countdown to the wedding ceremony">
+            <p class="kicker">Counting Down To</p>
+            <div class="countdown" aria-label="Time remaining">
+                @for (unit of countdownUnits(); track unit.key + unit.value) {
+                <div class="countdown-unit">
+                    <span class="countdown-value">{{ unit.value }}</span>
+                    <small>{{ unit.label }}</small>
+                </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="rsvp reveal" #revealEl id="rsvp">
+        <div class="section-header">
+            <p class="kicker">PLEASE JOIN US</p>
+            <p class="rsvp-intro">We can't wait to see you there!</p>
+        </div>
+
+        <form class="rsvp-form" #rsvpFormElement="ngForm" (ngSubmit)="submitRsvp()">
+            <fieldset class="rsvp-options">
+                <legend>Your response</legend>
+                <label class="rsvp-option">
+                    <input type="radio" name="response" value="Yes, I would love to!" required
+                        [(ngModel)]="rsvpForm.response" />
+                    <span>Yes, I would love to!</span>
+                </label>
+                <label class="rsvp-option">
+                    <input type="radio" name="response" value="We will miss being there, sending love"
+                        required [(ngModel)]="rsvpForm.response" />
+                    <span>We will miss being there, sending love</span>
+                </label>
+            </fieldset>
+
+            <label class="rsvp-field">
+                <span>Your name</span>
+                <input type="text" name="name" autocomplete="name" maxlength="100" required
+                    [(ngModel)]="rsvpForm.name" />
+            </label>
+            <label class="rsvp-field">
+                <span>Phone number</span>
+                <input type="tel" name="phone" autocomplete="tel" maxlength="40" required
+                    [(ngModel)]="rsvpForm.phone" />
+            </label>
+            <label class="rsvp-field rsvp-field-wide">
+                <span>Anything we should know to make your stay comfortable?</span>
+                <textarea name="notes" rows="4" maxlength="1000"
+                    [(ngModel)]="rsvpForm.notes"></textarea>
+            </label>
+            <p class="rsvp-privacy rsvp-field-wide">
+                Your contact details will only be used to coordinate your RSVP and guest arrangements.
+            </p>
+            <button type="submit" class="cta rsvp-submit" [disabled]="rsvpSubmitting || !rsvpFormElement.form.valid">
+                {{ rsvpSubmitting ? 'Sending...' : 'Send RSVP' }}
+            </button>
+            <p class="rsvp-message" [class.success]="rsvpMessageType === 'success'"
+                [class.error]="rsvpMessageType === 'error'" aria-live="polite">{{ rsvpMessage }}</p>
+        </form>
     </section>
 
     <footer class="footer reveal" #revealEl>
