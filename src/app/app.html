@@ -23,7 +23,7 @@
                 <span class="envelope-label">{{ splashOpening ? 'Opening invitation...' : 'Open invitation' }}</span>
             </span>
         </button>
-        <span style="font-family: cursives;">
+        <span class="ff-cursive">
             We said “I do” on 3rd May 2026 in our court marriage; now, let's celebrate our forever with you! ❤️
         </span>
     </div>
@@ -41,7 +41,6 @@
         <a href="#home">Home</a>
         <a href="#schedule">Timeline</a>
         <a href="#gallery">Gallery</a>
-        <a href="#rsvp">RSVP</a>
     </header>
 
     <section class="save-date reveal in-view" #revealEl id="home">
@@ -60,17 +59,17 @@
 
         <div class="hero-content">
             <p class="welcome">শুভ বিবাহ</p>
-            <div style="display:flex;align-items: center; flex-wrap: wrap; gap: 30px;">
+            <div class="couple-details">
                 <h1>
                     <p>{{ couple.groom }}</p>
-                    <p class="groom-family" style="font-size: 14px;font-family: cursive">
+                    <p class="groom-family">
                         S/O Pulak Mukherjee & Mousumi Mukherjee.
                     </p>
                 </h1>
                 <h1><span>&</span> </h1>
                 <h1>
                     <p>{{ couple.bride }}</p>
-                    <p class="bride-family" style="font-size: 14px;font-family: cursive">
+                    <p class="bride-family">
                         D/O Sunil Kumar Panja and Kuhali Panja.
                     </p>
                 </h1>
@@ -88,7 +87,7 @@
         </div>
     </section>
 
-    <section class="schedule reveal" #revealEl id="schedule">
+    <section class="schedule reveal in-view" #revealEl id="schedule">
         <div class="section-header reveal" #revealEl>
             <p class="kicker">Ceremonies & Celebrations</p>
             <h2>Wedding Timeline</h2>
@@ -184,7 +183,7 @@
         </dialog>
     </section>
 
-    <section class="save-date reveal" #revealEl>
+    <section class="counter-container save-date reveal" #revealEl>
         <div class="countdown-frame" aria-label="Countdown to the wedding ceremony">
             <p class="kicker">Counting Down To</p>
             <div class="countdown" aria-label="Time remaining">
@@ -206,33 +205,50 @@
 
         <form class="rsvp-form" #rsvpFormElement="ngForm" (ngSubmit)="submitRsvp()">
             <fieldset class="rsvp-options">
-                <legend>Your response</legend>
-                <label class="rsvp-option">
+                <legend>How will you celebrate with us?</legend>
+                <label class="rsvp-option" [class.selected]="rsvpForm.response === 'Yes, I would love to!'">
                     <input type="radio" name="response" value="Yes, I would love to!" required
                         [(ngModel)]="rsvpForm.response" />
-                    <span>Yes, I would love to!</span>
+                    <span class="rsvp-option-icon" aria-hidden="true">💌</span>
+                    <span class="rsvp-option-copy">
+                        <strong>We’ll be there!</strong>
+                        <small>Can’t wait to celebrate with you.</small>
+                    </span>
+                    <span class="rsvp-option-check" aria-hidden="true"></span>
                 </label>
-                <label class="rsvp-option">
+                <label class="rsvp-option"
+                    [class.selected]="rsvpForm.response === 'We will miss being there, sending love'">
                     <input type="radio" name="response" value="We will miss being there, sending love"
                         required [(ngModel)]="rsvpForm.response" />
-                    <span>We will miss being there, sending love</span>
+                    <span class="rsvp-option-icon" aria-hidden="true">💛</span>
+                    <span class="rsvp-option-copy">
+                        <strong>Sending our love</strong>
+                        <small>We’ll miss being there with you.</small>
+                    </span>
+                    <span class="rsvp-option-check" aria-hidden="true"></span>
                 </label>
             </fieldset>
 
             <label class="rsvp-field">
                 <span>Your name</span>
-                <input type="text" name="name" autocomplete="name" maxlength="100" required
-                    [(ngModel)]="rsvpForm.name" />
+                <input type="text" name="name" autocomplete="name" maxlength="100" required [(ngModel)]="rsvpForm.name" #nameModel="ngModel" />
+                @if (phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)) {
+                    <div class="alignment-fix"></div>
+                }
             </label>
             <label class="rsvp-field">
                 <span>Phone number</span>
-                <input type="tel" name="phone" autocomplete="tel" maxlength="40" required
-                    [(ngModel)]="rsvpForm.phone" />
+                <input type="tel" name="phone" autocomplete="tel" inputmode="numeric" maxlength="10"
+                    pattern="[0-9]{10}" aria-describedby="phone-hint" #phoneModel="ngModel"
+                    [attr.aria-invalid]="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched) ? 'true' : null"
+                    required [(ngModel)]="rsvpForm.phone" />
+                @if (phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)) {
+                <small class="rsvp-validation-error">Please enter exactly 10 digits.</small>
+                }
             </label>
             <label class="rsvp-field rsvp-field-wide">
                 <span>Anything we should know to make your stay comfortable?</span>
-                <textarea name="notes" rows="4" maxlength="1000"
-                    [(ngModel)]="rsvpForm.notes"></textarea>
+                <textarea name="notes" rows="4" maxlength="1000" [(ngModel)]="rsvpForm.notes"></textarea>
             </label>
             <p class="rsvp-privacy rsvp-field-wide">
                 Your contact details will only be used to coordinate your RSVP and guest arrangements.

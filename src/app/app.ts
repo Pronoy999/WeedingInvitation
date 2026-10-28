@@ -398,26 +398,6 @@ export class App implements AfterViewInit, OnDestroy {
         this.updateCountdown();
         this.countdownIntervalId = setInterval(() => this.updateCountdown(), 1000);
 
-        if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
-            this.observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        entry.target.classList.toggle('in-view', entry.isIntersecting);
-                    });
-                },
-                {
-                    threshold: 0.2,
-                    rootMargin: '0px 0px -8% 0px',
-                },
-            );
-
-            this.revealElements.forEach((element) => {
-                this.observer?.observe(element.nativeElement);
-            });
-        } else {
-            this.forceRevealElements();
-        }
-
         // Cross-browser safety: ensure reveal content is visible even if IO callbacks are missed.
         this.revealFallbackId = setTimeout(() => {
             this.forceRevealElements();

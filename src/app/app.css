@@ -26,6 +26,20 @@ p {
   margin: 0;
 }
 
+.ff-cursive {
+  font-family: cursive;
+}
+
+.groom-family,
+.bride-family {
+  font-size: 14px;
+  font-family: cursive;
+}
+
+.alignment-fix {
+  height: 20px;
+}
+
 .splash-screen {
   position: fixed;
   inset: 0;
@@ -578,6 +592,13 @@ p {
   position: relative;
   z-index: 2;
   transition: transform 0.2s linear;
+}
+
+.couple-details {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
 }
 
 .welcome,
@@ -1286,36 +1307,124 @@ h3 {
 .rsvp-options {
   display: grid;
   grid-column: 1 / -1;
-  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
   margin: 0;
-  padding: 1rem;
+  padding: 1rem 1.15rem 1.15rem;
   border: 1px solid rgba(244, 217, 167, 0.4);
-  border-radius: 0.8rem;
+  border-radius: 1rem;
 }
 
-.rsvp-options legend,
-.rsvp-field span {
+.rsvp-options legend {
+  grid-column: 1 / -1;
+  padding: 0 0.35rem;
   color: var(--accent-soft-gold);
   font-weight: 600;
 }
 
 .rsvp-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 92px;
+  padding: 1rem;
+  border: 1px solid rgba(244, 217, 167, 0.42);
+  border-radius: 0.85rem;
+  background: rgba(255, 248, 235, 0.06);
   color: var(--text-light);
   cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .rsvp-option input {
-  flex: 0 0 auto;
-  margin-top: 0.3rem;
-  accent-color: var(--accent-gold);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.rsvp-option:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-soft-gold);
+  background: rgba(255, 248, 235, 0.12);
+}
+
+.rsvp-option.selected {
+  border-color: var(--accent-soft-gold);
+  background: rgba(244, 217, 167, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(244, 217, 167, 0.25), 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.rsvp-option:has(input:focus-visible) {
+  outline: 2px solid var(--accent-soft-gold);
+  outline-offset: 3px;
+}
+
+.rsvp-option-icon {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(244, 217, 167, 0.13);
+  font-size: 1.35rem;
+}
+
+.rsvp-option-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.rsvp-option-copy strong {
+  color: var(--accent-soft-gold);
+  font-size: 1rem;
+}
+
+.rsvp-option-copy small {
+  color: rgba(255, 248, 235, 0.8);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.rsvp-option-check {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 1px solid rgba(244, 217, 167, 0.65);
+  border-radius: 50%;
+}
+
+.rsvp-option.selected .rsvp-option-check {
+  border-color: var(--accent-gold);
+  background: var(--accent-gold);
+  color: var(--text-dark);
+}
+
+.rsvp-option.selected .rsvp-option-check::after {
+  content: '✓';
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .rsvp-field {
   display: grid;
   gap: 0.45rem;
+}
+
+.rsvp-field>small {
+  color: rgba(255, 248, 235, 0.78);
+  font-size: 0.82rem;
+}
+
+.rsvp-field>.rsvp-validation-error {
+  color: #ffd0c7;
 }
 
 .rsvp-field-wide {
@@ -1343,8 +1452,7 @@ h3 {
 }
 
 .rsvp-field input:focus-visible,
-.rsvp-field textarea:focus-visible,
-.rsvp-option input:focus-visible {
+.rsvp-field textarea:focus-visible {
   outline: 2px solid var(--accent-soft-gold);
   outline-offset: 3px;
 }
@@ -1478,6 +1586,10 @@ h3 {
   }
 
   .rsvp-form {
+    grid-template-columns: 1fr;
+  }
+
+  .rsvp-options {
     grid-template-columns: 1fr;
   }
 
@@ -1840,67 +1952,6 @@ h3 {
   .tagline {
     margin-left: auto;
     margin-right: auto;
-  }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-
-  .hero-content,
-  .hero-image-card,
-  .royal-orb,
-  .cta,
-  .ghost-cta,
-  .event-card,
-  .gallery-item img,
-  .reveal {
-    transition: none !important;
-    animation: none !important;
-    transform: none !important;
-    filter: none !important;
-    opacity: 1 !important;
-  }
-
-  .timeline::before,
-  .timeline::after {
-    animation: none !important;
-  }
-
-  .splash-overlay h2,
-  h1,
-  .family-lines,
-  .hero-image-card,
-  .timeline-line,
-  .timeline-dot,
-  .top-nav {
-    animation: none !important;
-  }
-
-  .envelope,
-  .envelope-letter,
-  .envelope-flap,
-  .envelope-seal,
-  .envelope-label,
-  .splash-screen {
-    transition: none !important;
-  }
-
-  .event-card::before,
-  .event-card::after {
-    animation: none !important;
-  }
-
-  .page-bg::before {
-    animation: none !important;
-  }
-
-  .page-bg::after {
-    animation: none !important;
-  }
-
-  .stardust-layer::before,
-  .stardust-layer::after {
-    animation: none !important;
   }
 }
 
